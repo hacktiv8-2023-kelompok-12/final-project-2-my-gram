@@ -8,7 +8,6 @@ Ipung Dwi Ari Saputra
 ## API
 
 ```bash
-# My Gram API
 https://final-project-2-my-gram-production-3311.up.railway.app/
 
 ```
