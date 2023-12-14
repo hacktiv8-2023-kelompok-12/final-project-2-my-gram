@@ -256,7 +256,6 @@ describe('DELETE comment delete', () => {
                 done();
             });
     });
-//     TODO 3 failed condition
 });
 
 afterAll(async () => {
