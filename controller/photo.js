@@ -19,7 +19,7 @@ class PhotoC {
                 }]
             })
 
-            res.status(200).json(data)
+            res.status(200).json({photos: data})
         } catch (error) {
             res.sendStatus(error.code || 500)
         }
@@ -66,15 +66,16 @@ class PhotoC {
                 caption,
                 poster_image_url,
                 UserId: user.id
-            }).catch(() => {
+            }).catch((err) => {
                 throw {
-                    code: 400
+                    code: 400,
+                    message: err.errors
                 }
             });
 
             res.status(201).json(data)
         } catch (error) {
-            res.sendStatus(error.code || 500)
+            res.status(error.code || 500).send(error);
         }
     }
 
@@ -91,12 +92,14 @@ class PhotoC {
             const foundPhoto = await Photo.findByPk(parseInt(photoId), {});
             if (!foundPhoto) {
                 throw {
-                    code: 404
+                    code: 404,
+                    message: "photo not found"
                 }
             }
             if (req.user.id !== parseInt(foundPhoto.UserId)) {
                 throw {
-                    code: 403
+                    code: 403,
+                    message: "forbidden"
                 }
             }
 
@@ -109,22 +112,23 @@ class PhotoC {
                     id: parseInt(photoId)
                 },
                 returning: true
-            }).catch(() => {
+            }).catch((err) => {
                 throw {
-                    code: 400
+                    code: 400,
+                    message: err.errors
                 }
             })
 
             if (!data[0]) {
                 throw {
                     code: 404,
-                    message: "Photo not Found!"
+                    message: "photo not found"
                 }
             }
 
-            res.status(201).json(data[1][0])
+            res.status(200).json({photo: data[1][0]})
         } catch (error) {
-            res.sendStatus(error.code || 500)
+            res.status(error.code || 500).send(error);
         }
     }
 
@@ -135,12 +139,14 @@ class PhotoC {
             const foundPhoto = await Photo.findByPk(parseInt(photoId), {});
             if (!foundPhoto) {
                 throw {
-                    code: 404
+                    code: 404,
+                    message: "photo not found"
                 }
             }
             if (req.user.id !== parseInt(foundPhoto.UserId)) {
                 throw {
-                    code: 403
+                    code: 403,
+                    message: "forbidden"
                 }
             }
             const data = await Photo.destroy({
@@ -151,13 +157,13 @@ class PhotoC {
             if (!data) {
                 throw {
                     code: 404,
-                    message: "Photo not found!"
+                    message: "photo not found"
                 }
             }
             res.status(200).json({message: "Your photo has been successfully deleted"})
 
         } catch (error) {
-            res.sendStatus(error.code || 500)
+            res.status(error.code || 500).send(error);
         }
     }
 }

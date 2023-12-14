@@ -1,13 +1,2 @@
-const crypto = require("./lib/crypto");
-require("./middleware/auth").Init(crypto);
-require("./controller/user").Init(crypto);
-
-const express = require("express");
-const app = express();
-
-app.use(express.json());
-
-const routes = require("./routes");
-app.use(routes);
-
+const app = require("./bin/express");
 app.listen(process.env.PORT || 3000);

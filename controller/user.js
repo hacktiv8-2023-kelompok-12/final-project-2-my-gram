@@ -14,13 +14,21 @@ class UserC {
     static register = async (req, res) => {
         try {
             const {email, full_name, username, password, profile_image_url, age, phone_number} = req.body;
+            if (await User.findOne({
+                where: {email}
+            })) {
+                throw {
+                    code: 409,
+                    message: "email is used"
+                }
+            }
             const newUser = new User({
                 email, full_name, username, password: await this.#hash(password), profile_image_url, age, phone_number
             });
             await newUser.save().catch(err => {
                 throw {
                     code: 400,
-                    err
+                    message: err
                 };
             });
             res.status(201).json({
@@ -29,7 +37,7 @@ class UserC {
                 }
             });
         } catch (err) {
-            res.sendStatus(err.code || 500);
+            res.status(err.code || 500).send(err);
         }
     }
     static login = async (req, res) => {
@@ -46,11 +54,11 @@ class UserC {
                     code: 400, message: "user password is wrong"
                 };
             }
-            res.status(201).json({
+            res.status(200).json({
                 token: this.#sign_token({id: newUser.id})
             });
         } catch (err) {
-            res.sendStatus(err.code || 500);
+            res.status(err.code || 500).send(err);
         }
     }
     static updateUser = async (req, res) => {
@@ -67,7 +75,13 @@ class UserC {
             if (parseInt(userId) !== req.user.id) {
                 throw {
                     code: 403,
-                    message: "unauthorized"
+                    message: "forbidden"
+                }
+            }
+            if(! await User.findByPk(userId)) {
+                throw {
+                    code: 404,
+                    message: "user not found"
                 }
             }
             await User.update({
@@ -92,7 +106,7 @@ class UserC {
                 }
             });
         } catch (err) {
-            res.sendStatus(err.code || 500);
+            res.status(err.code || 500).send(err);
         }
     }
     static deleteUser = async (req, res) => {
@@ -101,7 +115,13 @@ class UserC {
             if (parseInt(userId) !== req.user.id) {
                 throw {
                     code: 403,
-                    message: "unauthorized"
+                    message: "forbidden"
+                }
+            }
+            if(! await User.findByPk(userId, {})) {
+                throw {
+                    code: 404,
+                    message: "user not found"
                 }
             }
             await User.destroy({
@@ -113,7 +133,7 @@ class UserC {
                 message: "Your account has been successfully deleted"
             })
         } catch (err) {
-            res.sendStatus(err.code || 500);
+            res.status(err.code || 500).send(err);
         }
     }
 }

@@ -12,28 +12,32 @@ class AuthMid {
             const {token} = req.headers;
             if (!token) {
                 throw {
-                    code: 401
+                    code: 401,
+                    message: "unauthorized"
                 };
             }
             const claim = await this.#verify_token(token).catch(()=>{
                 throw {
-                    code: 401
+                    code: 401,
+                    message: "unauthorized"
                 };
             });
             if (!claim) {
                 throw {
-                    code: 401
+                    code: 401,
+                    message: "unauthorized"
                 };
             }
             req.user = await User.findByPk(claim.id);
             if (!req.user) {
                 throw {
-                    code: 401
+                    code: 401,
+                    message: "unauthorized"
                 };
             }
             next();
         }catch (err) {
-            res.sendStatus(err.code || 500);
+            res.status(err.code || 500).send(err);
         }
     }
 }
