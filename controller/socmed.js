@@ -8,7 +8,7 @@ class SocialMediaC {
                 include: [{model: User, attributes: ["id", "username", "profile_image_url"]}]
             })
 
-            res.status(200).json(data)
+            res.status(200).json({social_medias: data})
         } catch (error) {
             res.status(500).json(error)
         }
@@ -54,15 +54,15 @@ class SocialMediaC {
                 social_media_url,
                 UserId: user.id
             }).catch((err) => {
-                console.log(err);
                 throw {
-                    code: 400
+                    code: 400,
+                    message: err.errors
                 }
             });
 
-            res.status(201).json(data)
+            res.status(201).json({social_media: data})
         } catch (error) {
-            res.sendStatus(error.code || 500)
+            res.status(error.code || 500).send(error);
         }
     }
 
@@ -78,12 +78,14 @@ class SocialMediaC {
             const foundSocmed = await SocialMedia.findByPk(parseInt(SocialMediaId),{});
             if(!foundSocmed){
                 throw {
-                    code: 404
+                    code: 404,
+                    message: "social media not found"
                 }
             }
             if(req.user.id !== parseInt(foundSocmed.UserId)){
                 throw {
-                    code: 403
+                    code: 403,
+                    message: "forbidden"
                 }
             }
 
@@ -104,9 +106,9 @@ class SocialMediaC {
                 }
             }
 
-            res.status(201).json(data[1][0])
+            res.status(200).json({social_media: data[1][0]})
         } catch (error) {
-            res.status(error.code || 500).json(error.message)
+            res.status(error.code || 500).json(error)
         }
     }
 
@@ -117,12 +119,14 @@ class SocialMediaC {
             const foundSocmed = await SocialMedia.findByPk(parseInt(SocialMediaId),{});
             if(!foundSocmed){
                 throw {
-                    code: 404
+                    code: 404,
+                    message: "social media not found"
                 }
             }
             if(req.user.id !== parseInt(foundSocmed.UserId)){
                 throw {
-                    code: 403
+                    code: 403,
+                    message: "forbidden"
                 }
             }
             const data = await SocialMedia.destroy({
@@ -133,13 +137,12 @@ class SocialMediaC {
             if (!data) {
                 throw {
                     code: 404,
-                    message: "SocialMedia not found!"
+                    message: "social media not found"
                 }
             }
-            res.status(200).json("Your SocialMedia has been successfully deleted")
-
+            res.status(200).json({message: "Your social media has been successfully deleted"});
         } catch (error) {
-            res.sendStatus(error.code || 500)
+            res.status(error.code || 500).send(error);
         }
     }
 }
