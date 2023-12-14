@@ -2,11 +2,11 @@ require("dotenv").config();
 
 module.exports = {
     "development": {
-        "username": process.env.DB_USERNAME || "postgres",
-        "password": process.env.DB_PASSWORD || "secret",
-        "database": process.env.DB_NAME || "my_gram_development",
-        "host": process.env.DB_HOST || "127.0.0.1",
-        "dialect": process.env.DB_DIALECT || "postgres"
+        "username": process.env.DB_USERNAME,
+        "password": process.env.DB_PASSWORD,
+        "database": process.env.DB_NAME,
+        "host": process.env.DB_HOST,
+        "dialect": process.env.DB_DIALECT
     },
     "test": {
         "username": process.env.DB_USERNAME_TEST,
@@ -17,11 +17,11 @@ module.exports = {
         "logging": false
     },
     "production": {
-        "username": process.env.DB_USERNAME_PROD || "root",
-        "password": process.env.DB_PASSWORD_PROD || "secret",
-        "database": process.env.DB_NAME_PROD || "my_gram_production",
-        "host": process.env.DB_HOST_PROD || "127.0.0.1",
-        "dialect": process.env.DB_DIALECT_PROD || "mysql",
+        "username": process.env.DB_USERNAME_PROD,
+        "password": process.env.DB_PASSWORD_PROD,
+        "database": process.env.DB_NAME_PROD,
+        "host": process.env.DB_HOST_PROD,
+        "dialect": process.env.DB_DIALECT_PROD,
         "port": process.env.DB_PORT
     }
 }
