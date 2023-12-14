@@ -5,6 +5,12 @@ module.exports = {
         try {
             const UserId = req.user.id;
             const {comment, PhotoId} = req.body;
+            if(! await Photo.findByPk(PhotoId, {})) {
+                throw {
+                    code: 404,
+                    message: "photo not found"
+                }
+            }
             const newComment = new Comment({
                 UserId, comment, PhotoId
             });
@@ -24,7 +30,7 @@ module.exports = {
                 }
             })
         } catch (err) {
-            res.sendStatus(err.code || 500);
+            res.status(err.code || 500).send(err);
         }
     },
     getComments: async (req, res) => {
@@ -53,9 +59,16 @@ module.exports = {
             const {commentId} = req.params;
             const {comment = null} = req.body;
             const updatedComment = await Comment.findByPk(commentId, {});
+            if(!updatedComment) {
+                throw {
+                    code: 404,
+                    message: "comment not found"
+                }
+            }
             if(req.user.id !== updatedComment.UserId) {
                 throw {
-                    code: 403
+                    code: 403,
+                    message: "forbidden"
                 }
             }
             await updatedComment.update({
@@ -69,7 +82,7 @@ module.exports = {
                 comment: updatedComment
             });
         }catch (err) {
-            res.sendStatus(err.code || 500);
+            res.status(err.code || 500).send(err);
         }
     },
     deleteComment: async (req, res) => {
@@ -78,12 +91,14 @@ module.exports = {
             const deletedComment = await Comment.findByPk(commentId, {});
             if(!deletedComment){
                 throw {
-                    code: 404
+                    code: 404,
+                    message: "comment not found"
                 }
             }
             if(req.user.id !== deletedComment.UserId) {
                 throw {
-                    code: 403
+                    code: 403,
+                    message: "forbidden"
                 }
             }
             await deletedComment.destroy();
@@ -91,7 +106,7 @@ module.exports = {
                 message: "Your comment has been successfully deleted"
             });
         }catch (err) {
-            res.sendStatus(err.code || 500);
+            res.status(err.code || 500).send(err);
         }
     }
 };
